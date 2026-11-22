@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media.net SSP · Publisher console (concept)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F4F6F9;--card:#fff;--line:#E3E8EF;--ink:#17212F;--muted:#5F6C7E;--acc:#0B8A7E;--accd:#076B62;--acc2:#3A8DDE;--accbg:#E3F4F2;--bar:#BDE3EE;--good:#17784A;--goodbg:#E3F4EA;--warn:#94560A;--warnbg:#FFF1D9;--bad:#B1342B;--badbg:#FDE7E4;--hold:#AEB8C5}
+*{box-sizing:border-box;min-width:0}
+html,body{height:100%}
+body{margin:0;font:13.5px/1.45 Inter,system-ui,sans-serif;color:var(--ink);background:var(--bg);overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+.top{height:52px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 18px;position:fixed;top:0;left:0;right:0;z-index:30}
+.logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px;width:194px}
+.logo .mk{width:24px;height:24px;border-radius:7px;background:var(--acc);display:grid;place-items:center;color:#fff;font-size:12px}
+.logo small{font-weight:500;color:var(--muted);font-size:12.5px}
+.acct{flex:1;display:flex;justify-content:center}
+.acct button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 12px;font-weight:500;cursor:pointer}
+.tools{display:flex;gap:14px;align-items:center;color:var(--muted)}
+.tools svg{width:18px;height:18px}
+.av{width:30px;height:30px;border-radius:50%;background:var(--acc2);color:#fff;display:grid;place-items:center;font-weight:600;font-size:12.5px}
+.side{position:fixed;top:52px;left:0;bottom:0;width:200px;background:#fff;border-right:1px solid var(--line);padding:12px 10px;display:flex;flex-direction:column;gap:2px;z-index:20}
+.side button{display:flex;align-items:center;gap:11px;width:100%;border:0;background:none;padding:9px 12px;border-radius:8px;cursor:pointer;text-align:left;color:var(--muted);font-weight:500}
+.side button:hover{background:var(--bg);color:var(--ink)}
+.side button.on{background:var(--accbg);color:var(--accd)}
+.side svg{width:18px;height:18px;flex:none}
+.side .sep{height:1px;background:var(--line);margin:8px 4px}
+.side .foot{margin-top:auto;font-size:11.5px;color:var(--muted);padding:8px 10px;line-height:1.4}
+main{position:fixed;top:52px;left:200px;right:0;bottom:0;padding:16px 22px 16px;display:flex;flex-direction:column;gap:12px;overflow:hidden}
+.fill{flex:1;min-height:0}
+h1{font-size:21px;font-weight:600;margin:0}
+h2{font-size:15px;font-weight:600;margin:0}
+h3{font-size:14px;font-weight:600;margin:0}
+.hrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.hrow .sp{flex:1}
+.tabs{display:flex;gap:20px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:none;padding:6px 0;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:var(--accd);border-color:var(--acc)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.between{justify-content:space-between}
+.grid{display:grid;gap:12px}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.panel>.ph{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+.panel>.pb{flex:1;min-height:0;overflow:auto}
+.panel>.pb.pad{padding:12px 16px}
+.lbl{font-size:12.5px;color:var(--muted);font-weight:500}
+.big{font-size:22px;font-weight:600;line-height:1.15;font-variant-numeric:tabular-nums}
+.chg{font-size:12.5px;font-weight:600}.up{color:var(--good)}.dn{color:var(--bad)}
+.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 13px;font-weight:500;cursor:pointer;min-height:34px;white-space:nowrap}
+.btn:hover{border-color:#C6CFDA}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}.btn.pri:hover{background:var(--accd)}
+.btn.sm{padding:3px 10px;min-height:28px;font-size:12.5px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+.seg button{border:0;background:none;padding:6px 12px;cursor:pointer;font-weight:500;color:var(--muted)}
+.seg button.on{background:var(--accbg);color:var(--accd)}
+select,input[type=text],textarea{border:1px solid var(--line);border-radius:8px;padding:5px 9px;background:#fff;min-height:34px}
+textarea{width:100%;min-height:140px;resize:vertical}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.banner{display:flex;gap:14px;align-items:center;justify-content:space-between;border-radius:12px;padding:10px 14px;flex-wrap:wrap}
+.banner.off{background:#FFF8EA;border:1px solid #F4DDA9}.banner.live{background:var(--accbg);border:1px solid #B5E0DA}
+.banner b{font-size:14px;margin-right:8px}
+.bars{display:flex;align-items:flex-end;gap:4px;height:36px;margin-top:8px}
+.bars i{flex:1;background:var(--bar);border-radius:3px 3px 0 0}.bars i:last-child{background:var(--acc2)}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12px;color:var(--muted);font-weight:600;background:#FAFBFC;white-space:nowrap;position:sticky;top:0;z-index:1}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+tr.click{cursor:pointer}tr.click:hover td{background:#F8FAFC}
+tr.sel td{background:var(--accbg)}
+.meter{height:7px;background:#EDF1F5;border-radius:4px;overflow:hidden;min-width:60px}.meter i{display:block;height:100%;background:var(--acc)}
+.chip{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:500;background:#EEF2F6;white-space:nowrap}
+.chip.t{background:#E6F0FB;color:#1F5C9E}
+.tier{display:inline-flex;align-items:center;gap:5px;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.tier:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.t-Low{background:var(--goodbg);color:var(--good)}.t-Medium{background:var(--warnbg);color:var(--warn)}.t-High{background:var(--badbg);color:var(--bad)}
+.st{font-size:12px;font-weight:600;white-space:nowrap}.st.on{color:var(--good)}.st.off{color:var(--muted)}.st.lab{color:var(--warn)}
+.muted{color:var(--muted)}.small{font-size:12.5px}
+.url{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:380px}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px}.empty p{max-width:520px}
+.fbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.prog{height:8px;background:#E8EDF2;border-radius:4px;overflow:hidden;flex:1;min-width:120px}.prog i{display:block;height:100%;background:var(--acc);transition:width .4s}
+.stat{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.drawer-bg{position:fixed;inset:0;background:rgba(15,23,35,.35);z-index:40;display:none}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(500px,100%);background:#fff;z-index:41;box-shadow:-8px 0 30px rgba(0,0,0,.12);transform:translateX(100%);transition:transform .25s;overflow-y:auto;padding:18px 20px}
+.drawer.open{transform:none}.drawer-bg.open{display:block}
+.modal-bg{position:fixed;inset:0;background:rgba(15,23,35,.45);z-index:50;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:14px;width:min(920px,100%);max-height:94vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal.sm{width:min(520px,100%)}
+.mhead{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.mbody{padding:16px 20px}.mfoot{padding:12px 20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}
+.steps{display:flex;gap:8px;margin-bottom:14px}
+.steps div{flex:1;border-top:3px solid var(--line);padding-top:6px;font-size:12.5px;color:var(--muted);font-weight:500}
+.steps div.on{border-color:var(--acc);color:var(--accd)}
+.wiz{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:18px}
+.opts2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.opt{border:1px solid var(--line);border-radius:10px;padding:9px 12px;display:flex;gap:10px;align-items:flex-start;cursor:pointer;margin-bottom:8px}
+.opts2 .opt{margin:0}
+.opt.on{border-color:var(--acc);background:#F3FBFA}
+.opt input{margin-top:3px;accent-color:var(--acc)}
+.summary{background:var(--bg);border-radius:10px;padding:12px 14px}
+.summary dt{font-size:12px;color:var(--muted)}.summary dd{margin:0 0 8px;font-weight:500}
+.switch{position:relative;width:38px;height:21px;flex:none;display:inline-block}
+.switch input{opacity:0;width:100%;height:100%;position:absolute;margin:0;cursor:pointer;z-index:1}
+.switch span{position:absolute;inset:0;background:#C9D2DC;border-radius:11px;transition:.2s}
+.switch span:after{content:"";position:absolute;left:3px;top:3px;width:15px;height:15px;border-radius:50%;background:#fff;transition:.2s}
+.switch input:checked+span{background:var(--acc)}.switch input:checked+span:after{transform:translateX(17px)}
+.switch input:focus-visible+span{outline:2px solid var(--acc);outline-offset:2px}
+.mock{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+.mockbar{background:#F1F3F6;padding:6px 10px;display:flex;gap:5px;align-items:center;font-size:11.5px;color:var(--muted)}
+.mockbar i{width:8px;height:8px;border-radius:50%;background:#D5DBE2;display:inline-block}
+.mockbar em{font-style:normal;margin-left:6px;background:#fff;border-radius:6px;padding:1px 8px;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.mockbody{padding:10px 12px}.mockbody h4{margin:0 0 6px;font-size:13.5px;line-height:1.3}
+.ln{height:7px;background:#EDF0F4;border-radius:4px;margin:5px 0}
+.adslot{border:1px dashed #C9D2DC;border-radius:8px;padding:9px 11px;margin:8px 0;background:#FBFCFD}
+.adslot small{color:var(--muted);font-size:11px}.adslot b{display:block;font-size:14.5px;margin:1px 0 4px}
+.adslot.bad{border-color:#E8A49C;background:#FFF6F5}.adslot.good{border-color:#8ED0C7;background:#F4FBFA}
+.why{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.why div{font-size:12.5px}.why b{display:block;font-size:13.5px}
+pre{background:#0F1A26;color:#D7E3EE;border-radius:0;padding:12px 14px;font-size:11.5px;margin:0;min-height:100%}
+.toast{position:fixed;bottom:18px;right:18px;background:var(--ink);color:#fff;padding:11px 15px;border-radius:10px;z-index:60;box-shadow:0 10px 30px rgba(0,0,0,.2);opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none;max-width:380px}
+.toast.show{opacity:1;transform:none}
+.legend{display:flex;gap:14px;font-size:12.5px;color:var(--muted)}.legend span:before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;background:var(--c)}
+.chart{position:relative;flex:1;min-height:150px;margin:6px 12px 8px}.chart svg{position:absolute;inset:0;width:100%;height:100%}
+.log{padding:0 16px;margin:0}.log li{padding:8px 0;border-bottom:1px solid var(--line);list-style:none}
+.hbar{display:grid;grid-template-columns:minmax(0,10em) minmax(0,1fr) 5.5em;gap:10px;align-items:center;margin:6px 0;font-size:12.5px}
+.lock{opacity:.55;filter:grayscale(.3)}
+.kv{display:grid;grid-template-columns:9em minmax(0,1fr);gap:5px 12px;font-size:13px}.kv dt{color:var(--muted)}.kv dd{margin:0}
+.two{display:grid;gap:12px;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+.pv{display:grid;gap:12px;grid-template-columns:minmax(0,2.1fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+@media(max-height:700px),(max-width:1000px){body{overflow:auto}main{position:static;margin:52px 0 0 200px;overflow:visible}.fill{flex:none}.panel>.pb{max-height:420px}.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.two,.pv{grid-template-columns:minmax(0,1fr);grid-template-rows:none}}
+@media(max-width:760px){.side{width:60px}.side button span,.side .foot,.logo small{display:none}main{margin-left:60px!important;left:60px;padding:14px 12px}.logo{width:auto}.g2,.g3,.wiz,.opts2{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="logo"><div class="mk" aria-hidden="true">m</div>Media.net <small>SSP</small></div>
+ <div class="acct"><button id="acctBtn" aria-label="Switch account">Demo publisher network (482910) ▾</button></div>
+ <div class="tools"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-label="Notifications" role="img"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><div class="av" title="Priya Nair, Yield manager">PN</div></div>
+</header>
+<nav class="side" id="side" aria-label="Main"></nav>
+<main id="main"></main>
+<div class="drawer-bg" id="drawerBg"></div><aside class="drawer" id="drawer" aria-label="Page details"></aside>
+<div class="modal-bg" id="modalBg"><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+{
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>n>=1e7?(n/1e7).toFixed(2)+' Cr':n>=1e5?(n/1e5).toFixed(1)+' L':Math.round(n).toLocaleString('en-IN');
+const inr=n=>'₹'+fmt(n);
+const pct=(v,d=1)=>(v*100).toFixed(d)+'%';
+const sgn=(v,d=1)=>(v>=0?'+':'')+(v*100).toFixed(d)+'%';
+const ICON={
+dash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
+inv:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></svg>',
+ctx:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>',
+rep:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+set:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>'};
+
+/* ---------- classifier ---------- */
+const W=s=>s.split(' ');
+const CATS={
+'Food & Drink':W('recipe recipes paneer cook cooking curry masala butter tomato cream spices dish kadai garnish simmer grocery onion garlic ginger naan rice delicious sauce chilli coriander fridge breakfast poha oats sweets ladoo ghee dal biryani food chai cooker kitchen ingredients spicy'),
+'Travel':W('travel flight flights airline airport hotel hotels resort beach goa trip holiday stay tourists destination booking metro commuters fares lounge miles abroad trains station'),
+'Personal Finance':W('loan home emi interest rate rates lenders lender bank banks credit score tenure prepayment repo rbi balance transfer fees fee calculator fixed floating insurance tax savings sip invest deposit mutual funds premium policy claim card cards budget'),
+'Sports > Cricket':W('cricket match century batter batting bowlers bowler wickets innings overs sixes boundaries captain league playoffs fantasy balls spinner team teams squad ipl auction season'),
+'Technology > Mobile Phones':W('smartphone smartphones phone phones camera sensor display amoled battery charging processor gaming android storage ram'),
+'Automotive':W('car cars suv engine mileage electric vehicle sedan showroom'),
+'Health & Fitness':W('health diet doctor protein fitness exercise weight diabetes medication blood millet fibre calories conditions'),
+'News > Politics':W('election rally parties party opposition voting polls minister government vote leader scheme contest welfare'),
+'News > Accidents & Disasters':W('killed injured crash accident accidents wreckage debris emergency rescued rescue victims investigation regulator hospitals stranded diverted flood landslide displaced evacuated tragedy')};
+const SENSITIVE=['Health & Fitness','News > Politics'];
+const INTENTS={
+'Food & Drink':[['buy fresh paneer online',.9],['grocery delivery in 10 minutes',.85],['best non-stick kadai',.75],['pressure cooker deals',.8],['diwali sweets gift box',.8],['instant poha and oats breakfast mix',.7]],
+'Travel':[['cheap flights to goa',.9],['hotel deals this weekend',.85],['travel insurance for flight delays',.7],['metro card recharge',.5],['mumbai monsoon food tour',.4],['airport lounge access card',.8]],
+'Personal Finance':[['lowest home loan interest rate',.95],['best travel credit card',.9],['best sip mutual funds',.85],['car loan interest rate',.85],['no cost emi phones',.8],['income tax calculator',.5],['check credit score free',.55]],
+'Sports > Cricket':[['fantasy cricket team tips',.8],['cricket bat online',.6],['live cricket streaming',.5]],
+'Technology > Mobile Phones':[['best phone under 30000',.9],['phone exchange offer',.85],['67w fast charger',.6]],
+'Automotive':[['ev on-road price',.9],['car loan rates',.8]],
+'Health & Fitness':[['health insurance for parents',.8],['diabetic friendly atta',.7]],
+'News > Politics':[],
+'News > Accidents & Disasters':[['latest news updates',.1]]};
+const RISK_HIGH=W('killed dead death victims terror attack shooting bomb murder');
+const RISK_MED=W('crash accident accidents injured tragedy debris emergency wreckage lawsuit scam fraud investigation stranded landslide displaced');
+const POS=W('delicious brilliant thrilling excellent great best good perfect quick steady improves lower');
+const NEG=W('killed injured crash stranded debris victims closed risk displaced landslide charges');
+const STOP=new Set(W('the and for with this that from your into about then until more most they their them there than when which while will have been were also only just like over after before what some other each very much many such these those first next last best here keep check'));
+const tok=t=>t.toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(Boolean);
+function analyze(text){
+ const w=tok(text),cnt={};w.forEach(x=>cnt[x]=(cnt[x]||0)+1);const set=new Set(w);let tot=0;const raw={};
+ for(const [c,l] of Object.entries(CATS)){raw[c]=l.reduce((s,x)=>s+(cnt[x]||0),0);tot+=raw[c]}
+ const cats=Object.entries(raw).filter(([,v])=>v>0).map(([c,v])=>[c,v/tot]).sort((a,b)=>b[1]-a[1]).filter(([,v])=>v>=.15).slice(0,3);
+ const hi=RISK_HIGH.filter(x=>set.has(x)),me=RISK_MED.filter(x=>set.has(x));
+ const risk=hi.reduce((s,x)=>s+3*cnt[x],0)+me.reduce((s,x)=>s+cnt[x],0);
+ const tier=risk>=7?'High':risk>=3?'Medium':'Low';
+ const p=w.filter(x=>POS.includes(x)).length,n=w.filter(x=>NEG.includes(x)).length,s=(p-n)/(p+n+1);
+ const dict=new Set(Object.values(CATS).flat());
+ const keywords=Object.entries(cnt).filter(([x])=>x.length>=4&&!STOP.has(x)&&!/^\d+$/.test(x)).sort((a,b)=>(b[1]+(dict.has(b[0])?.5:0))-(a[1]+(dict.has(a[0])?.5:0))).slice(0,8).map(([x])=>x);
+ const conf=cats.length?Math.min(.98,.42+cats[0][1]*.6):0;
+ return{cats,tier,riskWords:[...hi,...me],sentiment:s>.2?'Positive':s<-.2?'Negative':'Neutral',keywords,conf,set:[...set]};
+}
+function intentsFor(L){
+ if(L.tier==='High'&&S.cfg.safety!=='Open')return{list:[],why:'Withheld: high-risk page'};
+ if(S.cfg.sensitive&&L.cats.some(([c,v])=>SENSITIVE.includes(c)&&v>=.25))return{list:[],why:'Withheld: sensitive topic'};
+ const set=new Set(L.set),out=[];L.cats.filter(([,v])=>v>=.2).forEach(([c,v])=>(INTENTS[c]||[]).forEach(([q,sc])=>{const ws=q.split(' ').filter(x=>x.length>2),ov=ws.filter(x=>set.has(x)||set.has(x+'s')||set.has(x.replace(/s$/,''))).length/ws.length;out.push({q,sc,score:sc*v*(.3+ov)})}));
+ out.sort((a,b)=>b.score-a.score);return{list:out.slice(0,4),why:''};
+}
+
+/* ---------- sample data ---------- */
+const CATP={Cricket:{base:65,lift:{ecpm:1.06,ctr:1.3,fill:.014},uns:.0003},News:{base:70,lift:{ecpm:1.04,ctr:1.2,fill:.012},uns:.011},Business:{base:150,lift:{ecpm:1.1,ctr:1.3,fill:.016},uns:.0006},Finance:{base:165,lift:{ecpm:1.13,ctr:1.35,fill:.018},uns:.0002},Tech:{base:120,lift:{ecpm:1.12,ctr:1.4,fill:.02},uns:.0002},Food:{base:95,lift:{ecpm:1.11,ctr:1.45,fill:.022},uns:.0003},Auto:{base:140,lift:{ecpm:1.12,ctr:1.35,fill:.018},uns:.0002},Travel:{base:110,lift:{ecpm:1.1,ctr:1.4,fill:.02},uns:.0004},Health:{base:100,lift:{ecpm:1.05,ctr:1.15,fill:.01},uns:.0008}};
+const SITES=[
+{id:'cb',domain:'cricbuzz.com',cat:'Cricket',pv:12000000},
+{id:'ht',domain:'hindustantimes.com',cat:'News',pv:15000000},
+{id:'nd',domain:'ndtv.com',cat:'News',pv:11000000},
+{id:'lm',domain:'livemint.com',cat:'Business',pv:6000000},
+{id:'mc',domain:'moneycontrol.com',cat:'Finance',pv:7500000},
+{id:'g3',domain:'gadgets360.com',cat:'Tech',pv:4000000},
+{id:'hk',domain:'hebbarskitchen.com',cat:'Food',pv:5000000},
+{id:'zw',domain:'zigwheels.com',cat:'Auto',pv:3000000},
+{id:'tp',domain:'tripoto.com',cat:'Travel',pv:2500000},
+{id:'hs',domain:'healthshots.com',cat:'Health',pv:2000000}].map(s=>({...s,...CATP[s.cat],req:s.pv*.1}));
+const PAGES=[
+{site:'hk',sec:'food',path:'/paneer-butter-masala-recipe/',title:'Paneer butter masala recipe, restaurant style',pv:620000,text:'This paneer butter masala recipe gives you a rich, creamy curry at home. Heat butter in a kadai, add onion, ginger and garlic. Add tomato, chilli and garam masala and simmer the sauce. Stir in fresh cream, add soft paneer cubes and garnish with coriander. If your grocery store is out of paneer, frozen works. Serve this delicious dish with naan or rice.'},
+{site:'hk',sec:'food',path:'/quick-breakfast-recipes/',title:'10 quick breakfast recipes for busy mornings',pv:410000,text:'Ten-minute breakfast recipes: poha, besan chilla and masala oats. Cook onion, tomato and spices, add oats and simmer. Garnish with coriander. A delicious, quick dish for busy mornings; keep ingredients ready in the fridge and order grocery staples the night before.'},
+{site:'hk',sec:'food',path:'/rice-dal-pressure-cooker/',title:'How to cook rice and dal in a pressure cooker',pv:280000,text:'How to cook rice and dal perfectly in a pressure cooker: rinse, soak, cook on medium heat and count the whistles. Choose a steel cooker with a thick base for curry and biryani. Delicious results every time in your kitchen.'},
+{site:'hk',sec:'food',path:'/diwali-sweets-recipes/',title:'Easy Diwali sweets: kaju katli, ladoo and more',pv:350000,text:'Diwali sweets at home: kaju katli, besan ladoo and gulab jamun. Cook sugar syrup, add ghee, cream and cardamom spices. Garnish with pistachio. Order grocery packs early, as stores run out before the festival.'},
+{site:'cb',sec:'sports',path:'/cricket-news/ipl-auction-pace-buys',title:'IPL auction: teams spend big on pace bowlers',pv:1100000,text:'IPL auction: teams spend big on fast bowlers as franchises rebuild for the new league season. One captain said the squad needs depth in batting and spin. Fantasy cricket players are already planning their team picks for the first match.'},
+{site:'cb',sec:'sports',path:'/cricket-match-report/league-final-chase',title:'Match report: 186 chased down with a ball to spare',pv:980000,text:'The home side chased down 186 with one ball to spare in a thrilling league match. The opening batter struck a brilliant century off 58 balls, hitting nine sixes. The visiting captain rotated his bowlers well, and the spinner took three wickets in the middle overs to slow the innings. Fantasy cricket players who picked the opener as captain will be celebrating.'},
+{site:'ht',sec:'travel',path:'/travel/regional-flight-skids-off-runway-in-heavy-rain',title:'Two killed as regional flight skids off runway in heavy rain',pv:880000,text:'Two passengers were killed and 23 injured when a regional airline flight skidded off the runway while landing in heavy rain. Emergency teams rescued passengers from the wreckage. The airport was closed for six hours as debris was cleared. The regulator has ordered an investigation into the crash. Families of the victims gathered at the terminal. Holiday travellers were stranded.'},
+{site:'ht',sec:'politics',path:'/india-news/rally-crowds-jobs-prices',title:'Election rally draws crowds as parties spar over jobs and prices',pv:960000,text:'Election rally draws large crowds as parties trade charges over jobs and prices. The opposition leader promised a new welfare scheme while the government defended its record. Voting is due next month in five states; polls suggest a close contest.'},
+{site:'ht',sec:'travel',path:'/cities/new-metro-line-airport-commute',title:'New metro line cuts airport commute to 25 minutes',pv:540000,text:'New metro line opens: commuters can now travel from the airport to the business district in 25 minutes. Fares start at Rs 20 and trains run every six minutes. Hotels near the station expect more tourists and weekend trips.'},
+{site:'nd',sec:'news',path:'/india-news/flood-warning-rivers-rise-landslide',title:'Flood warning as rivers rise; two killed in landslide',pv:720000,text:'Flood warning: heavy rain has injured dozens and displaced thousands as rivers rise. Rescue teams and emergency services evacuated villages; two people were killed in a landslide. Debris blocks roads and an investigation into dam releases continues.'},
+{site:'nd',sec:'finance',path:'/business/budget-what-changes-tax-loans',title:'Budget explained: what changes for your tax, loans and savings',pv:1250000,text:'Budget explained: tax slabs revised, home loan interest deduction raised and new rules for credit card spending abroad. Banks expect more loan demand; lenders may cut rates if the RBI repo rate falls. Here is what changes for your EMI and savings.'},
+{site:'lm',sec:'finance',path:'/money/personal-finance/sip-vs-fixed-deposit',title:'SIP vs fixed deposit: which suits you?',pv:380000,text:'SIP vs fixed deposit: FDs give a fixed interest rate from your bank, while a SIP in mutual funds can earn more over a long tenure but carries risk. Check fees and tax before you invest your savings.'},
+{site:'lm',sec:'finance',path:'/economy/rbi-repo-rate-what-it-means',title:'RBI holds the repo rate: what it means for your EMI',pv:450000,text:'The RBI kept the repo rate unchanged, so floating home loan rates and EMI payments stay steady for now. Banks may still revise deposit rates. Borrowers with a good credit score can ask their lender for a lower rate or consider a balance transfer.'},
+{site:'mc',sec:'finance',path:'/news/business/home-loan-interest-rates-explained',title:'How home loan interest rates work, and how to lower your EMI',pv:520000,text:'Your home loan EMI depends on the loan amount, the interest rate and the tenure. Lenders link home loan rates to the RBI repo rate. A good credit score helps you negotiate a lower rate with your bank. A balance transfer can reduce your EMI, but check fees first. Use an EMI calculator before you sign.'},
+{site:'mc',sec:'finance',path:'/news/business/best-travel-credit-cards',title:'Best credit cards for travel this year',pv:430000,text:'Best credit cards for travel: earn air miles on flights, free airport lounge access and hotel discounts. Check the annual fee, interest rate and foreign markup before you apply. A good credit score improves approval chances with any bank.'},
+{site:'mc',sec:'health',path:'/news/business/health-insurance-for-parents',title:'Health insurance for parents: what to check',pv:310000,text:'Health insurance for parents: compare policy cover, waiting periods and claim settlement ratios. Check if diabetes and other conditions are covered, and keep your doctor records ready. A healthy diet and exercise help, but health cover protects savings.'},
+{site:'g3',sec:'tech',path:'/mobiles/reviews/nova-x5-review',title:'Nova X5 review: the best camera phone under Rs 30,000?',pv:600000,text:'The Nova X5 is a mid-range smartphone with a surprisingly good camera. The 50 MP sensor takes sharp photos, and night mode is better than most phones at this price. The AMOLED display is bright and smooth. Battery life is excellent, and fast charging fills the battery in 45 minutes. The processor handles gaming well. Android updates are promised for four years.'},
+{site:'g3',sec:'tech',path:'/mobiles/features/no-cost-emi-smartphones',title:'No-cost EMI on smartphones: how it really works',pv:290000,text:'No-cost EMI on smartphones: the bank adds the interest as a discount, so the phone price stays the same. Check the processing fee and your credit card limit before buying a new camera phone with a big battery and fast charging.'},
+{site:'zw',sec:'auto',path:'/news/car-loan-emi-guide',title:'Car loan EMI guide: compare before the showroom',pv:240000,text:'Car loan EMI guide: compare interest rates from banks before you visit the showroom. An electric car or SUV may qualify for a lower rate. Use an EMI calculator, keep the tenure short and check the on-road price and insurance.'},
+{site:'zw',sec:'auto',path:'/reviews/electric-suv-first-drive',title:'Electric SUV first drive: 450 km of range, tested',pv:330000,text:'We drove the new electric SUV for a week. The car delivers a smooth drive, quick charging and around 450 km of real range. The cabin is quiet, the engine noise is gone and the showroom price undercuts most rivals. Mileage costs drop sharply compared with a petrol vehicle.'},
+{site:'tp',sec:'travel',path:'/trip/mumbai-monsoon-street-food-trail',title:'A monsoon street-food trail in Mumbai',pv:230000,text:'Monsoon street food trail in Mumbai: vada pav, bhutta and masala chai near the beach. Plan your trip around the rain, travel light and stay near the station. Delicious, spicy and cheap, a perfect holiday food walk for tourists.'},
+{site:'tp',sec:'travel',path:'/trip/goa-in-the-monsoon',title:'Goa in the monsoon: a quiet, green and cheaper holiday',pv:310000,text:'Goa in the monsoon is a different holiday: green hills, waterfalls and empty beaches. Hotel and resort prices drop and flights are cheaper too. Plan your trip around the rain. Book a stay in South Goa for a calm break. Travel insurance that covers flight delays is a good idea. With fewer tourists, it is the best time to visit.'},
+{site:'hs',sec:'health',path:'/healthy-eating/diabetes-friendly-meal-plan',title:'A diabetes-friendly meal plan that still tastes good',pv:190000,text:'Diabetes-friendly meal plan: millet rotis, dal and vegetables keep blood sugar steady. Talk to your doctor about diet, exercise and medication. Protein at breakfast, fibre at lunch and a light dinner help with weight and health.'},
+{site:'hs',sec:'health',path:'/fitness/10-minute-home-workout',title:'A 10-minute home workout for busy days',pv:260000,text:'This 10-minute home workout needs no equipment: squats, push-ups, lunges and planks. Exercise like this improves fitness and burns calories. Pair it with a protein-rich diet and enough sleep. Check with your doctor first if you have a health condition.'}
+].map((p,i)=>({...p,id:'p'+i,L:analyze(p.text),ov:null,recrawl:false}));
+const UNITS=[];
+SITES.forEach(s=>{const f=Math.round(s.base*.45);UNITS.push({site:s.id,name:'Top banner',size:'728×90',place:'Header',floor:f,ctx:true},{site:s.id,name:'In-article',size:'300×250',place:'Article body',floor:Math.round(f*1.4),ctx:true});
+ if(['News','Cricket'].includes(s.cat))UNITS.push({site:s.id,name:'Mobile sticky',size:'320×50',place:'Footer',floor:Math.round(f*.6),ctx:true});else UNITS.push({site:s.id,name:'Sidebar',size:'300×600',place:'Right rail',floor:Math.round(f*1.2),ctx:true})});
+const NEWS='News > Accidents & Disasters';
+const CAMPS=[
+{n:'SkyHigh Airlines',ad:'Monsoon sale: flights from ₹2,499',cats:['Travel'],t:W('flight flights airline holiday travel'),neg:W('crash accident killed flood'),bid:220,safe:'strict',ctr:.0035,sec:['travel']},
+{n:'FreshCart',ad:'Paneer, cream and spices in 10 minutes',cats:['Food & Drink'],t:W('grocery paneer delivery cream spices'),neg:[],bid:160,safe:'moderate',ctr:.004,sec:['food']},
+{n:'Kadai & Co',ad:'Non-stick kadai and cookers, 40% off',cats:['Food & Drink'],t:W('kadai cooker kitchen cook curry'),neg:[],bid:120,safe:'moderate',ctr:.003,sec:['food']},
+{n:'HomeFirst Bank',ad:'Home loans at a low rate. Switch today',cats:['Personal Finance'],t:W('home loan emi interest transfer'),neg:[],bid:260,safe:'strict',ctr:.003,sec:['finance']},
+{n:'CardNest',ad:'Free lounge access with every card',cats:['Personal Finance','Travel'],t:W('credit card miles lounge travel'),neg:[],bid:240,safe:'strict',ctr:.0032,sec:['finance']},
+{n:'GrowWise',ad:'Start a SIP from ₹500 a month',cats:['Personal Finance'],t:W('sip invest mutual funds savings'),neg:[],bid:210,safe:'strict',ctr:.0028,sec:['finance']},
+{n:'ShieldPlus',ad:'Insurance that pays claims in 3 days',cats:['Personal Finance','Travel','Automotive','Health & Fitness'],t:W('insurance claim policy cover travel'),neg:W('killed'),bid:180,safe:'moderate',ctr:.0025,sec:['finance','travel','health','auto']},
+{n:'PlayXI',ad:'Pick your fantasy XI for tonight',cats:['Sports > Cricket'],t:W('fantasy cricket captain league match'),neg:[],bid:200,safe:'moderate',ctr:.0045,sec:['sports']},
+{n:'Nova X5',ad:'The camera phone everyone is talking about',cats:['Technology > Mobile Phones'],t:W('phone smartphone camera battery charging'),neg:[],bid:240,safe:'strict',ctr:.0035,sec:['tech']},
+{n:'Volt EV',ad:'Drive electric from ₹1,999 a month',cats:['Automotive'],t:W('electric car suv drive showroom'),neg:[],bid:230,safe:'strict',ctr:.002,sec:['auto']},
+{n:'MetroRide',ad:'Tap in, ride on: get the MetroRide card',cats:['Travel'],t:W('metro commuters fares trains station'),neg:[],bid:110,safe:'moderate',ctr:.004,sec:['travel']},
+{n:'FitLife',ad:'Protein and millet snacks, delivered',cats:['Health & Fitness','Food & Drink'],t:W('health protein diet millet fitness'),neg:[],bid:130,safe:'moderate',ctr:.003,sec:['health']},
+{n:'LuxeWatch',ad:'Timeless. Swiss-made watches',cats:[],t:[],neg:[],bid:170,safe:'strict',ctr:.0012,sec:['*']},
+{n:'NewsPass+',ad:'All your news in one app. ₹99 a month',cats:[NEWS,'News > Politics'],t:W('news investigation report updates election'),neg:[],bid:70,safe:'any',ctr:.002,sec:['news','politics']}];
+const ALLOW={strict:['Low'],moderate:['Low','Medium'],any:['Low','Medium','High']};
+
+/* ---------- state ---------- */
+const S={view:'dash',ctxTab:'pages',on:false,progress:0,cfg:{sites:Object.fromEntries(SITES.map(s=>[s.id,true])),safety:'Moderate',sensitive:true,share:true,split:90},rolled:false,
+ range:7,siteF:'all',mode:'Historical',pf:{site:'all',topic:'all',tier:'all',conf:'all',q:''},selSite:'cb',prev:{site:'ht',page:'p6',unit:null},
+ log:[{t:'21 Nov, 18:40',u:'Arjun Mehta',a:'Added ad unit "Mobile sticky" on ndtv.com'},{t:'19 Nov, 11:05',u:'Priya Nair',a:'Raised floor price on moneycontrol.com In-article to ₹104'}]};
+const now=()=>{const d=new Date();return d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})+', '+d.toTimeString().slice(0,5)};
+const addLog=a=>S.log.unshift({t:now(),u:'Priya Nair',a});
+let wiz=null;
+/* ---------- labels ---------- */
+const siteOf=id=>SITES.find(s=>s.id===id);
+const enabledSite=id=>S.on&&!!S.cfg.sites[id];
+function labelled(p){ if(!enabledSite(p.site))return false; const list=PAGES.filter(q=>enabledSite(q.site)); return list.indexOf(p)<Math.round(S.progress*list.length)}
+function eff(p){const L=p.L;if(!p.ov)return L;const o={...L};if(p.ov.topic)o.cats=[[p.ov.topic,1]];if(p.ov.tier)o.tier=p.ov.tier;o.conf=1;return o}
+function relevance(c,L,ints){const top=L.cats[0]?L.cats[0][1]:1;const cm=Math.max(0,...L.cats.filter(([k])=>c.cats.includes(k)).map(([,v])=>v/top));
+ const it=ints.map(i=>i.q).join(' ');const set=new Set(L.set);const im=c.t.length?c.t.filter(x=>set.has(x)||it.includes(x)).length/c.t.length:0;return Math.round((.6*cm+.4*im)*100)/100}
+function decide(p){
+ const L=eff(p),I=intentsFor(L);
+ const before=CAMPS.filter(c=>c.sec.includes(p.sec)||c.sec.includes('*')).sort((a,b)=>b.bid-a.bid)[0];
+ const rows=CAMPS.map(c=>{const r=relevance(c,L,I.list);let why='';
+  if(!ALLOW[c.safe].includes(L.tier))why=`Blocked: buyer allows ${ALLOW[c.safe].join(' / ')} risk only`;
+  else if(c.neg.some(x=>L.set.includes(x)))why=`Blocked: negative keyword "${c.neg.find(x=>L.set.includes(x))}"`;
+  else if(L.tier==='High'&&S.cfg.safety==='Strict')why='Blocked: publisher allows no ads on high-risk pages';
+  else if(L.tier==='High'&&!c.cats.includes(NEWS))why='Blocked: high-risk page, news-safe buyers only';
+  return{c,r,why,score:why?0:c.bid*(.6+.8*r)}}).sort((a,b)=>b.score-a.score||b.c.bid-a.c.bid);
+ return{L,I,before,rows,win:rows[0].score>0?rows[0]:null,bRel:relevance(before,L,I.list)};
+}
+const unsafe=(c,L)=>!ALLOW[c.safe].includes(L.tier)||(L.tier==='High'&&!c.cats.includes(NEWS));
+
+/* ---------- stats ---------- */
+const DAYS=28,TEST0=19;
+const noise=(a,b,c)=>{const x=Math.sin(a*12.9898+b*78.233+c*37.719)*43758.5453;return x-Math.floor(x)};
+const dates=[...Array(DAYS)].map((_,i)=>{const d=new Date(Date.UTC(2026,10,22));d.setUTCDate(d.getUTCDate()-(DAYS-i));return d});
+const dlabel=d=>d.getUTCDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getUTCMonth()];
+function day(si,d){
+ const s=SITES[si],req=s.req*(1+.07*Math.sin(d/2.2+si))*(.94+.12*noise(si,d,1));
+ const live=enabledSite(s.id)&&d>=TEST0;const share=live?(S.rolled?.95:S.cfg.split/100):0;
+ const g=(sh,ctx)=>{const r=req*sh,lf=s.lift,fill=.82+.02*noise(si,d,2)+(ctx?lf.fill:0),imp=r*fill,ecpm=s.base*(.95+.1*noise(si,d,3))*(ctx?lf.ecpm:1),rev=imp*ecpm/1000,ctr=.0034*(.9+.2*noise(si,d,4))*(ctx?lf.ctr:1);
+  return{req:r,imp,rev,clk:imp*ctr,pv:r/1.6,unsafe:ctx?r*s.uns*.04:r*s.uns,blocked:ctx?r*s.uns:0}};
+ return{c:g(share,true),h:g(1-share,false)};
+}
+function agg(days,sites,grp){const o={req:0,imp:0,rev:0,clk:0,pv:0,unsafe:0,blocked:0};
+ for(const d of days)for(const si of sites){const x=day(si,d);const parts=grp==='c'?[x.c]:grp==='h'?[x.h]:[x.c,x.h];for(const p of parts)for(const k in o)o[k]+=p[k]}return o}
+const siteIdx=()=>S.siteF==='all'?SITES.map((_,i)=>i):[SITES.findIndex(s=>s.id===S.siteF)];
+/* ---------- render: shell ---------- */
+const NAV=[['dash','Dashboard',ICON.dash],['inv','Inventory',ICON.inv],['ctx','Contextual',ICON.ctx],['rep','Reports',ICON.rep],['sep'],['set','Settings',ICON.set]];
+function renderSide(){$('#side').innerHTML=NAV.map(n=>n[0]==='sep'?'<div class="sep"></div>':`<button data-nav="${n[0]}" class="${S.view===n[0]?'on':''}" ${S.view===n[0]?'aria-current="page"':''}>${n[2]}<span>${n[1]}</span></button>`).join('')+'<div class="foot">Concept prototype for a Media.net APM case study. Site names are illustrative; pages, traffic and revenue are sample data, not real figures from these publishers.</div>'}
+function render(){renderSide();const v={dash:vDash,inv:vInv,ctx:vCtx,rep:vRep,set:vSet}[S.view];$('#main').innerHTML=v();after()}
+function after(){const c=$('#trend');if(c)drawTrend(c)}
+function filterBar(showMode=true){
+ return `<div class="fbar">${showMode?`<div class="seg" role="group" aria-label="Data mode">${['Historical','Real-time'].map(m=>`<button data-mode="${m}" class="${S.mode===m?'on':''}">${m}</button>`).join('')}</div>`:''}
+ <select data-f="range" aria-label="Date range"><option value="7" ${S.range==7?'selected':''}>Last 7 days</option><option value="14" ${S.range==14?'selected':''}>Last 14 days</option></select>
+ <span class="muted small">${dlabel(dates[DAYS-S.range])} – ${dlabel(dates[DAYS-1])}</span>
+ <select data-f="siteF" aria-label="Site"><option value="all">All sites (${SITES.length})</option>${SITES.map(s=>`<option value="${s.id}" ${S.siteF===s.id?'selected':''}>${s.domain}</option>`).join('')}</select></div>`;
+}
+const ctxStatus=s=>{const pages=PAGES.filter(p=>p.site===s.id),lab=pages.filter(labelled).length;return !enabledSite(s.id)?'<span class="st off">○ Off</span>':lab<pages.length?'<span class="st lab">◐ Labelling</span>':'<span class="st on">● On</span>'};
+
+/* ---------- S1 dashboard ---------- */
+function kpi(label,cur,prev,daily,f){const ch=prev?(cur-prev)/prev:0;const mx=Math.max(...daily);
+ return `<div class="card"><div class="row between"><span class="lbl">${label}</span><span class="chg ${ch>=0?'up':'dn'}">${ch>=0?'▲':'▼'} ${Math.abs(ch*100).toFixed(1)}%</span></div><div class="row between" style="align-items:baseline;margin-top:2px"><span class="big">${f(cur)}</span><span class="small muted">vs ${f(prev)}</span></div><div class="bars" aria-hidden="true">${daily.map(v=>`<i style="height:${Math.max(4,v/mx*100)}%"></i>`).join('')}</div></div>`}
+const testDays=()=>[...Array(DAYS-TEST0)].map((_,i)=>TEST0+i);
+function vDash(){
+ const R=S.range,cur=[...Array(R)].map((_,i)=>DAYS-R+i),prev=[...Array(R)].map((_,i)=>DAYS-2*R+i),si=siteIdx();
+ const A=agg(cur,si),B=agg(prev,si),dd=cur.map(d=>agg([d],si));
+ const nSites=Object.values(S.cfg.sites).filter(Boolean).length,td=testDays();
+ const banner=!S.on?`<div class="banner off"><div><b>Contextual targeting is off</b><span class="small">34% of your impressions carry no usable user ID. Contextual targeting reads each page and matches ads to it, with no tracking.</span></div><button class="btn pri" data-act="wizard">Enable contextual targeting</button></div>`
+ :`<div class="banner live"><div><b>Contextual targeting is live on ${nSites} site${nSites>1?'s':''}</b><span class="small">${S.progress<1?`Labelling pages: ${Math.round(S.progress*100)}% done. `:'All pages labelled. '}${S.rolled?'Rolled out to 95% (5% permanent holdout).':`Test: ${S.cfg.split}% contextual / ${100-S.cfg.split}% holdout, day ${td.length} of 14.`}</span></div><div class="row"><button class="btn" data-go="ctx">View pages</button><button class="btn pri" data-go="rep">See results</button></div></div>`;
+ const C=agg(td,si,'c'),H=agg(td,si,'h'),rpmC=C.pv?C.rev/C.pv*1000:0,rpmH=H.pv?H.rev/H.pv*1000:0,cov=S.on?S.progress*.92:0;
+ const topics=S.on&&S.progress>0?topicStats(cur,si).slice(0,4):[],mx=Math.max(...topics.map(t=>t.rev),1);
+ const snap=S.on?`<div class="card"><div class="row between"><h2>Contextual snapshot</h2><span class="st on">● Live</span></div>
+  <div class="grid g3" style="margin:10px 0 6px"><div><div class="lbl">Label coverage</div><div class="big">${pct(cov,0)}</div></div><div><div class="lbl">RPM vs holdout</div><div class="big up">${rpmH?sgn(rpmC/rpmH-1):'–'}</div></div><div><div class="lbl">Unsafe ads blocked</div><div class="big">${fmt(C.blocked)}</div></div></div>
+  ${topics.length?'<div class="lbl" style="margin-top:6px">Top topics by revenue</div>'+topics.map(t=>`<div class="hbar"><span>${esc(t.topic)}</span><div class="meter"><i style="width:${t.rev/mx*100}%;background:var(--acc2)"></i></div><span class="n">${inr(t.rev)}</span></div>`).join(''):''}</div>`
+ :`<div class="card lock"><div class="row between"><h2>Contextual snapshot</h2><span class="st off">● Off</span></div><p class="muted small" style="margin:8px 0">Label coverage, RPM lift, unsafe ads blocked and revenue by topic appear here once contextual targeting is on.</p><button class="btn pri" data-act="wizard">Enable</button></div>`;
+ const steps=[['Ad requests',A.req],['On labelled pages',S.on?A.req*cov:null],['Eligible after safety rules',A.req-(S.on?A.blocked:0)],['Bids received',A.req*.93],['Impressions',A.imp]];
+ const funnel=`<div class="panel fill"><div class="ph"><h2>Ad request funnel</h2><span class="small muted">${R} days</span></div><div class="pb"><table><thead><tr><th>Stage</th><th class="n">Requests</th><th>Share</th></tr></thead><tbody>${steps.map(([n,v])=>`<tr><td>${n}</td><td class="n">${v==null?'<span class="muted">Off</span>':fmt(v)}</td><td>${v==null?'':`<div class="row" style="gap:8px;flex-wrap:nowrap"><div class="meter" style="flex:1"><i style="width:${v/A.req*100}%"></i></div><span class="small n" style="width:3em">${pct(v/A.req,0)}</span></div>`}</td></tr>`).join('')}</tbody></table></div></div>`;
+ const bySite=SITES.map((s,i)=>{const x=agg(cur,[i]);return{s,x}}).sort((a,b)=>b.x.rev-a.x.rev);
+ const sites=`<div class="panel"><div class="ph"><h2>Performance by site</h2><span class="small muted">Click a site to filter</span></div><div class="pb"><table><thead><tr><th>Site</th><th class="n">Ad requests</th><th class="n">Net revenue</th><th class="n">eCPM</th><th class="n">Fill</th><th>Contextual</th></tr></thead><tbody>${bySite.map(({s,x})=>`<tr class="click ${S.siteF===s.id?'sel':''}" data-fsite="${s.id}" tabindex="0"><td><b>${s.domain}</b> <span class="small muted">${s.cat}</span></td><td class="n">${fmt(x.req)}</td><td class="n">${inr(x.rev)}</td><td class="n">₹${(x.imp?x.rev/x.imp*1000:0).toFixed(1)}</td><td class="n">${pct(x.req?x.imp/x.req:0)}</td><td>${ctxStatus(s)}</td></tr>`).join('')}</tbody></table></div></div>`;
+ return `<div class="hrow"><h1>Dashboard</h1><span class="sp"></span>${filterBar()}</div>${banner}
+ <div class="grid g4">${kpi('Ad requests',A.req,B.req,dd.map(x=>x.req),fmt)}${kpi('Net revenue',A.rev,B.rev,dd.map(x=>x.rev),inr)}${kpi('eCPM (net)',A.rev/A.imp*1000,B.rev/B.imp*1000,dd.map(x=>x.rev/x.imp*1000),v=>'₹'+v.toFixed(1))}${kpi('Fill rate',A.imp/A.req,B.imp/B.req,dd.map(x=>x.imp/x.req),v=>pct(v))}</div>
+ <div class="two fill">${sites}<div style="display:flex;flex-direction:column;gap:12px;min-height:0">${snap}${funnel}</div></div>`;
+}
+
+/* ---------- S2 inventory ---------- */
+function vInv(){
+ const rows=SITES.map(s=>{const pages=PAGES.filter(p=>p.site===s.id),lab=pages.filter(labelled).length,units=UNITS.filter(u=>u.site===s.id).length;
+  return `<tr class="click ${S.selSite===s.id?'sel':''}" data-site="${s.id}" tabindex="0"><td><b>${s.domain}</b></td><td>${s.cat}</td><td class="n">${fmt(s.pv)}</td><td class="n">${units}</td><td>${ctxStatus(s)}</td><td style="width:140px"><div class="row" style="gap:8px;flex-wrap:nowrap"><div class="meter" style="flex:1"><i style="width:${pages.length?lab/pages.length*100:0}%"></i></div><span class="small">${pages.length?Math.round(lab/pages.length*100):0}%</span></div></td><td>${enabledSite(s.id)?S.cfg.safety:'–'}</td></tr>`}).join('');
+ const s=siteOf(S.selSite)||SITES[0];S.selSite=s.id;
+ const pages=PAGES.filter(p=>p.site===s.id);
+ const detail=`<div class="panel"><div class="ph"><div><h2>${s.domain}</h2><span class="small muted">${s.cat} · ${fmt(s.pv)} monthly page views (sample)</span></div><button class="btn sm" data-act="addUnit">+ Add ad unit</button></div><div class="pb"><table><thead><tr><th>Ad unit</th><th>Size</th><th class="n">Floor (CPM)</th><th>Contextual</th></tr></thead><tbody>${UNITS.map((u,i)=>u.site!==s.id?'':`<tr><td>${esc(u.name)}<div class="small muted">${esc(u.place)}</div></td><td>${esc(u.size)}</td><td class="n">₹${u.floor}</td><td><label class="switch"><input type="checkbox" data-unit="${i}" ${u.ctx?'checked':''} ${enabledSite(s.id)?'':'disabled'} aria-label="Contextual for ${esc(u.name)}"><span></span></label></td></tr>`).join('')}</tbody></table>
+ <div style="padding:12px 16px"><div class="lbl" style="margin-bottom:6px">Sample pages on this site</div>${pages.map(p=>`<div class="row between" style="padding:5px 0;border-bottom:1px solid var(--line);flex-wrap:nowrap"><span class="small" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.title)}</span>${labelled(p)?`<span class="tier t-${eff(p).tier}">${eff(p).tier}</span>`:'<span class="st off small">Not labelled</span>'}</div>`).join('')||'<p class="small muted">No pages yet.</p>'}</div></div></div>`;
+ return `<div class="hrow"><div><h1>Inventory</h1><span class="small muted">${SITES.length} sites · ${UNITS.length} ad units · where contextual targeting is on</span></div><span class="sp"></span><button class="btn" data-act="addSite">+ Add site</button></div>
+ <div class="two fill"><div class="panel"><div class="ph"><h2>Sites</h2><span class="small muted">Click a site to see its ad units</span></div><div class="pb"><table><thead><tr><th>Site</th><th>Category</th><th class="n">Monthly views</th><th class="n">Units</th><th>Contextual</th><th>Pages labelled</th><th>Safety</th></tr></thead><tbody>${rows}</tbody></table></div></div>${detail}</div>`;
+}
+
+/* ---------- S4 pages / S6 preview ---------- */
+function vCtx(){
+ return `<div class="hrow"><h1>Contextual targeting</h1><div class="tabs" role="tablist"><button data-tab="pages" class="${S.ctxTab==='pages'?'on':''}">Pages and labels</button><button data-tab="preview" class="${S.ctxTab==='preview'?'on':''}">Ad preview</button></div><span class="sp"></span>${S.on?'<button class="btn" data-act="wizard">Contextual settings</button>':''}</div>`+(S.ctxTab==='pages'?vPages():vPreview());
+}
+function vPages(){
+ if(!S.on)return `<div class="panel fill"><div class="pb empty"><h2>No pages labelled yet</h2><p class="muted">Turn on contextual targeting and every page on your sites is read once and labelled with its topic, brand-safety risk and the reader's likely next searches.</p><button class="btn pri" data-act="wizard">Enable contextual targeting</button></div></div>`;
+ const ens=PAGES.filter(p=>enabledSite(p.site)),lab=ens.filter(labelled);
+ const low=lab.filter(p=>eff(p).conf<.7).length,avg=lab.length?lab.reduce((s,p)=>s+eff(p).conf,0)/lab.length:0;
+ const f=S.pf,topics=[...new Set(PAGES.map(p=>eff(p).cats[0]?.[0]).filter(Boolean))];
+ let list=PAGES.filter(p=>(f.site==='all'||p.site===f.site)&&(f.q===''||(p.title+p.path+siteOf(p.site).domain).toLowerCase().includes(f.q.toLowerCase())));
+ list=list.filter(p=>{if(!labelled(p))return f.topic==='all'&&f.tier==='all'&&f.conf==='all';const L=eff(p);return(f.topic==='all'||L.cats[0]?.[0]===f.topic)&&(f.tier==='all'||L.tier===f.tier)&&(f.conf==='all'||(f.conf==='low'?L.conf<.7:L.conf>=.7))});
+ const rows=list.map(p=>{const s=siteOf(p.site);if(!labelled(p))return `<tr><td><b>${esc(p.title)}</b><div class="url">${s.domain}${esc(p.path)}</div></td><td colspan="5"><span class="st ${enabledSite(p.site)?'lab':'off'}">${enabledSite(p.site)?'◐ Waiting to be crawled':'○ Site not enabled'}</span></td><td class="n">${fmt(p.pv)}</td><td></td></tr>`;
+  const L=eff(p),I=intentsFor(L);return `<tr class="click" data-page="${p.id}" tabindex="0"><td><b>${esc(p.title)}</b><div class="url">${s.domain}${esc(p.path)}${p.ov?' · <b style="color:var(--acc)">Edited</b>':''}</div></td><td>${L.cats[0]?`<span class="chip t">${esc(L.cats[0][0])}</span>`:'–'}</td><td><span class="tier t-${L.tier}">${L.tier}</span></td><td>${L.sentiment}</td><td class="small">${I.list[0]?esc(I.list[0].q):`<span class="muted">${I.why||'–'}</span>`}</td><td class="n">${Math.round(L.conf*100)}%</td><td class="n">${fmt(p.pv)}</td><td><button class="btn sm" data-prev="${p.id}">Preview ad</button></td></tr>`}).join('');
+ const sel=(k,opts)=>`<select data-pf="${k}" aria-label="${k}">${opts.map(([v,t])=>`<option value="${v}" ${f[k]===v?'selected':''}>${t}</option>`).join('')}</select>`;
+ const st=(l,v,extra='')=>`<div class="card" style="padding:10px 14px"><div class="stat"><span class="lbl">${l}</span><span class="big">${v}</span></div>${extra}</div>`;
+ return `<div class="grid g4">${st('Pages labelled',`${lab.length}<span class="muted" style="font-size:14px"> / ${ens.length}</span>`,`<div class="prog" style="margin-top:6px"><i style="width:${ens.length?lab.length/ens.length*100:0}%"></i></div>`)}${st('Average confidence',lab.length?Math.round(avg*100)+'%':'–')}${st('Need review (low confidence)',low)}${st('High-risk pages',lab.filter(p=>eff(p).tier==='High').length)}</div>
+ <div class="fbar"><input type="text" data-pf="q" placeholder="Search title, site or URL" value="${esc(f.q)}" aria-label="Search pages" style="min-width:230px">
+ ${sel('site',[['all','All sites'],...SITES.map(s=>[s.id,s.domain])])}${sel('topic',[['all','All topics'],...topics.map(t=>[t,t])])}${sel('tier',[['all','Any risk'],['Low','Low risk'],['Medium','Medium risk'],['High','High risk']])}${sel('conf',[['all','Any confidence'],['low','Low confidence'],['high','High confidence']])}
+ <span style="flex:1"></span><span class="small muted">${list.length} pages</span><button class="btn" data-act="analyze">+ Analyze a new page</button></div>
+ <div class="panel fill"><div class="pb"><table><thead><tr><th>Page</th><th>Top topic</th><th>Safety</th><th>Sentiment</th><th>Top likely search</th><th class="n">Confidence</th><th class="n">Monthly views</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="8" class="muted">No pages match these filters.</td></tr>'}</tbody></table></div></div>`;
+}
+function openDrawer(id){
+ const p=PAGES.find(x=>x.id===id),s=siteOf(p.site),L=eff(p),I=intentsFor(L),opts=Object.keys(CATS);
+ $('#drawer').innerHTML=`<div class="row between"><span class="small muted">${s.domain}${esc(p.path)}</span><button class="btn sm" data-act="closeDrawer" aria-label="Close">✕</button></div>
+ <h2 style="margin:8px 0 6px;font-size:18px">${esc(p.title)}</h2><p class="small muted" style="margin:0 0 12px">${esc(p.text.slice(0,180))}… <i>(sample text)</i></p>
+ <div class="row" style="gap:8px;margin-bottom:12px"><span class="tier t-${L.tier}">${L.tier} risk</span><span class="chip">${L.sentiment}</span><span class="chip">Crawled ${p.recrawl?'just now (re-crawl queued)':'2 h ago'}</span>${p.ov?'<span class="chip t">Edited by publisher</span>':''}</div>
+ <h3>Topics</h3>${L.cats.map(([c,v])=>`<div class="hbar"><span>${esc(c)}</span><div class="meter"><i style="width:${v*100}%"></i></div><span class="n">${Math.round(v*100)}%</span></div>`).join('')||'<p class="muted small">No confident topic.</p>'}
+ ${L.riskWords.length?`<p class="small" style="margin:8px 0"><b>Why ${L.tier.toLowerCase()} risk:</b> ${L.riskWords.map(esc).join(', ')}</p>`:''}
+ <h3 style="margin-top:12px">Likely next searches</h3>${I.list.length?I.list.map(i=>`<div class="hbar"><span>${esc(i.q)}</span><div class="meter"><i style="width:${i.sc*100}%;background:var(--acc2)"></i></div><span class="n small">${Math.round(i.sc*100)}% buy</span></div>`).join(''):`<p class="small muted">${I.why}</p>`}
+ <h3 style="margin-top:12px">Keywords</h3><div class="row" style="gap:6px;margin-top:6px">${L.keywords.map(k=>`<span class="chip">${esc(k)}</span>`).join('')}</div>
+ <div class="card" style="margin-top:16px;background:var(--bg)"><h3>Correct the labels</h3><p class="small muted" style="margin:2px 0 10px">Your edits override the classifier and are kept on re-crawls.</p>
+ <div class="kv"><dt>Top topic</dt><dd><select id="ovTopic"><option value="">Keep: ${esc(p.L.cats[0]?.[0]||'none')}</option>${opts.map(o=>`<option ${p.ov?.topic===o?'selected':''}>${o}</option>`).join('')}</select></dd><dt>Safety tier</dt><dd><select id="ovTier"><option value="">Keep: ${p.L.tier}</option>${['Low','Medium','High'].map(o=>`<option ${p.ov?.tier===o?'selected':''}>${o}</option>`).join('')}</select></dd></div>
+ <div class="row" style="margin-top:12px"><button class="btn pri" data-act="saveOv" data-id="${p.id}">Save labels</button>${p.ov?`<button class="btn" data-act="clearOv" data-id="${p.id}">Reset to automatic</button>`:''}<button class="btn" data-act="recrawl" data-id="${p.id}">Re-crawl</button><button class="btn" data-prev="${p.id}">Preview ad</button></div></div>`;
+ $('#drawer').classList.add('open');$('#drawerBg').classList.add('open');
+}
+const closeDrawer=()=>{$('#drawer').classList.remove('open');$('#drawerBg').classList.remove('open')};
+function adSlot(c,cls,size){return c?`<div class="adslot ${cls}"><small>Sponsored · ${esc(c.n)} · ${size}</small><b>${esc(c.ad)}</b><span class="btn sm" style="display:inline-block">Learn more</span></div>`:`<div class="adslot ${cls}"><small>${size}</small><b>Slot left empty</b><span class="small muted">No ad passed the safety rules</span></div>`}
+function mock(p,slot){const s=siteOf(p.site);return `<div class="mock"><div class="mockbar"><i></i><i></i><i></i><em>${s.domain}${esc(p.path)}</em></div><div class="mockbody"><h4>${esc(p.title)}</h4><div class="ln" style="width:94%"></div><div class="ln" style="width:70%"></div>${slot}<div class="ln" style="width:88%"></div></div></div>`}
+function vPreview(){
+ const P=S.prev,sitePages=PAGES.filter(p=>p.site===P.site),p=PAGES.find(x=>x.id===P.page&&x.site===P.site)||sitePages[0];P.page=p.id;
+ const units=UNITS.map((u,i)=>({...u,i})).filter(u=>u.site===P.site),unit=units.find(u=>u.i===P.unit)||units.find(u=>u.name==='In-article')||units[0];P.unit=unit.i;
+ const D=decide(p),L=D.L,w=D.win,bUnsafe=unsafe(D.before,L),ctxLive=enabledSite(p.site)&&unit.ctx;
+ const json={site:{page:'https://'+siteOf(p.site).domain+p.path,content:S.cfg.share?{cattax:7,cat:L.cats.map(([c])=>c),keywords:L.keywords.join(','),ext:{safety_tier:L.tier.toLowerCase(),sentiment:L.sentiment.toLowerCase(),intent:D.I.list.map(i=>i.q)}}:{note:'Label sharing is off in contextual settings'}},imp:[{tagid:unit.name,banner:{format:unit.size}}]};
+ const ctr=(c,r)=>(c.ctr*(1+2.5*r)*100).toFixed(2);
+ return `<div class="fbar"><select data-pv="site" aria-label="Site">${SITES.map(s=>`<option value="${s.id}" ${P.site===s.id?'selected':''}>${s.domain}</option>`).join('')}</select>
+ <select data-pv="page" aria-label="Page" style="max-width:440px">${sitePages.map(q=>`<option value="${q.id}" ${q.id===p.id?'selected':''}>${esc(q.title)}</option>`).join('')}</select>
+ <select data-pv="unit" aria-label="Ad unit">${units.map(u=>`<option value="${u.i}" ${u.i===unit.i?'selected':''}>${esc(u.name)} · ${u.size}</option>`).join('')}</select>
+ ${!ctxLive?`<span class="chip" style="background:var(--warnbg);color:var(--warn)">Preview only: contextual is ${S.on?'off for this site or unit':'not enabled yet'}</span>`:''}</div>
+ <div class="pv fill">
+ <div class="grid g2"><div><div class="row between" style="margin-bottom:6px"><h2>Without contextual</h2>${bUnsafe?'<span class="tier t-High">Brand-safety issue</span>':''}</div>${mock(p,adSlot(D.before,bUnsafe?'bad':'',unit.size))}<p class="small muted" style="margin:6px 0 0">Picked by URL section "<b>${esc(p.sec)}</b>": highest bid wins (₹${D.before.bid}). Relevance ${D.bRel.toFixed(2)} · exp. CTR ${ctr(D.before,D.bRel)}%</p></div>
+ <div><div class="row between" style="margin-bottom:6px"><h2>With contextual</h2><span class="tier t-Low">Matched to the page</span></div>${mock(p,adSlot(w&&w.c,'good',unit.size))}<p class="small muted" style="margin:6px 0 0">${w?`Rank score ${Math.round(w.score)} · bid ₹${w.c.bid} · exp. CTR ${ctr(w.c,w.r)}%`:'Empty is safer than a harmful match.'}</p></div></div>
+ <div class="card"><h2 style="margin-bottom:10px">Why this ad?</h2><div class="why">
+ <div class="muted">Page topic<b>${L.cats.map(c=>esc(c[0])).join(', ')||'None'}</b></div><div class="muted">Brand-safety tier<b><span class="tier t-${L.tier}">${L.tier}</span></b></div>
+ <div class="muted">Reader's likely search<b>${D.I.list[0]?esc(D.I.list[0].q):esc(D.I.why||'None')}</b></div><div class="muted">Winner's relevance<b>${w?w.r.toFixed(2)+' of 1.00':'–'}</b></div></div>
+ <p class="small muted" style="margin:10px 0 0">Safety rules run first. Rank = bid × (0.6 + 0.8 × relevance); relevance = 0.6 × topic match + 0.4 × search and keyword match.</p></div>
+ <div class="panel"><div class="ph"><h2>All candidate ads</h2><span class="small muted">${D.rows.filter(x=>!x.why).length} eligible · ${D.rows.filter(x=>x.why).length} blocked</span></div><div class="pb"><table><thead><tr><th>Advertiser</th><th class="n">Bid (CPM)</th><th class="n">Relevance</th><th class="n">Rank score</th><th>Status</th></tr></thead><tbody>${D.rows.map((x,i)=>`<tr${i===0&&w?' class="sel"':''}><td>${esc(x.c.n)}</td><td class="n">₹${x.c.bid}</td><td class="n">${x.r.toFixed(2)}</td><td class="n">${x.why?'–':Math.round(x.score)}</td><td class="small ${x.why?'muted':''}">${x.why?esc(x.why):i===0?'<b style="color:var(--good)">Won</b>':'Eligible'}</td></tr>`).join('')}</tbody></table></div></div>
+ <div class="panel"><div class="ph"><h2>Sent to buyers</h2><button class="btn sm" data-act="copyRtb">Copy</button></div><div class="pb"><pre id="rtb">${esc(JSON.stringify(json,null,2))}</pre></div></div></div>`;
+}
+
+/* ---------- S7 reports ---------- */
+function vRep(){
+ const head=`<div class="hrow"><h1>Reports</h1><div class="tabs" role="tablist"><button class="on">Contextual impact</button></div><span class="sp"></span>${S.on?filterBar(false):''}</div>`;
+ if(!S.on)return head+`<div class="panel fill"><div class="pb empty"><h2>No contextual test yet</h2><p class="muted">Once contextual targeting is on, pages with contextual ads are compared against a holdout group that keeps today's ads, so you see the real lift.</p><button class="btn pri" data-act="wizard">Enable contextual targeting</button></div></div>`;
+ const si=siteIdx(),td=testDays(),C=agg(td,si,'c'),H=agg(td,si,'h');
+ const m=o=>({rpm:o.pv?o.rev/o.pv*1000:0,ctr:o.imp?o.clk/o.imp:0,fill:o.req?o.imp/o.req:0,uns:o.imp?o.unsafe/o.imp:0});
+ const a=m(C),b=m(H),lift=(x,y)=>y?(x-y)/y:0;
+ const card=(n,x,y,f,good,note)=>{const l=lift(x,y),ok=good?l>=0:l<=0;return `<div class="card"><div class="row between"><span class="lbl">${n}</span><span class="small muted">${note}</span></div><div class="big" style="margin-top:2px">${f(x)}</div><div class="small"><span class="chg ${ok?'up':'dn'}">${l>=0?'▲':'▼'} ${Math.abs(l*100).toFixed(1)}%</span> <span class="muted">vs ${f(y)} holdout</span></div></div>`};
+ const pass=lift(a.rpm,b.rpm)>=.03,trows=topicStats(td,si);
+ return head+`<div class="banner ${pass?'live':'off'}"><div><b>${S.rolled?'Rolled out: contextual now serves 95% of traffic':pass?'The test passes: RPM is up '+sgn(lift(a.rpm,b.rpm))+' with every guardrail held':'Not enough lift yet: keep the test running'}</b><span class="small">${td.length}-day test · ${S.rolled?'95% / 5%':S.cfg.split+'% / '+(100-S.cfg.split)+'%'} · goal: RPM +3% or more; fill and safety no worse. Simulated on sample data.</span></div>${pass&&!S.rolled?'<button class="btn pri" data-act="rollout">Roll out to 95%</button>':''}</div>
+ <div class="grid g4">${card('RPM',a.rpm,b.rpm,v=>'₹'+v.toFixed(1),true,'North star')}${card('Click-through rate',a.ctr,b.ctr,v=>pct(v,2),true,'Relevance')}${card('Fill rate',a.fill,b.fill,v=>pct(v),true,'Guardrail')}${card('Unsafe placements',a.uns,b.uns,v=>pct(v,3),false,'Guardrail')}</div>
+ <div class="two fill"><div class="panel"><div class="ph"><h2>RPM per day: contextual vs holdout</h2><div class="legend"><span style="--c:var(--acc)">Contextual</span><span style="--c:var(--hold)">Holdout</span></div></div><div class="chart" id="trend" data-si="${si.join(',')}"></div></div>
+ <div class="panel"><div class="ph"><h2>Revenue by topic</h2><button class="btn sm" data-act="csv">Copy CSV</button></div><div class="pb"><table><thead><tr><th>Topic</th><th class="n">Net revenue</th><th class="n">eCPM ctx</th><th class="n">eCPM hold</th><th class="n">Lift</th></tr></thead><tbody>${trows.map(r=>`<tr><td>${esc(r.topic)}</td><td class="n">${inr(r.rev)}</td><td class="n">₹${r.ec.toFixed(1)}</td><td class="n">₹${r.eh.toFixed(1)}</td><td class="n ${r.ec>=r.eh?'up':'dn'}">${r.eh?sgn(r.ec/r.eh-1):'–'}</td></tr>`).join('')}</tbody></table></div></div></div>`;
+}
+function topicStats(days,si){
+ const m={};const sites=si.map(i=>SITES[i].id);
+ for(const p of PAGES.filter(p=>sites.includes(p.site))){const L=eff(p),t0=L.cats[0]?L.cats[0][0]:'Unclassified',t=t0.startsWith('News')?'News':t0;const sp=PAGES.filter(q=>q.site===p.site).reduce((s,q)=>s+q.pv,0),sh=p.pv/sp,ix=[SITES.findIndex(s=>s.id===p.site)];
+  const C=agg(days,ix,'c'),H=agg(days,ix,'h');m[t]=m[t]||{topic:t,imp:0,rev:0,cr:0,ci:0,hr:0,hi:0};
+  m[t].imp+=(C.imp+H.imp)*sh;m[t].rev+=(C.rev+H.rev)*sh;m[t].cr+=C.rev*sh;m[t].ci+=C.imp*sh;m[t].hr+=H.rev*sh;m[t].hi+=H.imp*sh}
+ return Object.values(m).map(r=>({...r,ec:r.ci?r.cr/r.ci*1000:0,eh:r.hi?r.hr/r.hi*1000:0})).sort((a,b)=>b.rev-a.rev);
+}
+function drawTrend(el){
+ const si=el.dataset.si.split(',').map(Number),td=testDays();
+ const pts=td.map(d=>{const C=agg([d],si,'c'),H=agg([d],si,'h');return{d,c:C.rev/C.pv*1000,h:H.rev/H.pv*1000}});
+ const W=el.clientWidth,H=el.clientHeight;if(W<50||H<50)return;const l=46,r=26,t=10,b=26,lo=Math.min(...pts.map(p=>Math.min(p.c,p.h)))*.95,hi=Math.max(...pts.map(p=>Math.max(p.c,p.h)))*1.03;
+ const X=i=>l+i*(W-l-r)/(pts.length-1),Y=v=>t+(1-(v-lo)/(hi-lo))*(H-t-b);
+ const line=k=>pts.map((p,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(p[k]).toFixed(1)).join(' ');
+ const ticks=[0,1,2,3].map(i=>lo+(hi-lo)*i/3);
+ el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Daily RPM: contextual is above holdout every day">${ticks.map(v=>`<line x1="${l}" x2="${W-r}" y1="${Y(v)}" y2="${Y(v)}" stroke="#E8EDF2"/><text x="${l-8}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="#5F6C7E">₹${v.toFixed(0)}</text>`).join('')}
+ ${pts.map((p,i)=>`<text x="${X(i)}" y="${H-6}" text-anchor="middle" font-size="11" fill="#5F6C7E">${dlabel(dates[p.d])}</text>`).join('')}
+ <path d="${line('h')}" fill="none" stroke="#AEB8C5" stroke-width="2.5"/><path d="${line('c')}" fill="none" stroke="#0B8A7E" stroke-width="2.5"/>${pts.map((p,i)=>`<circle cx="${X(i)}" cy="${Y(p.c)}" r="3.5" fill="#0B8A7E"/><circle cx="${X(i)}" cy="${Y(p.h)}" r="3" fill="#AEB8C5"/>`).join('')}</svg>`;
+}
+
+/* ---------- S9 settings ---------- */
+function vSet(){
+ return `<div class="hrow"><div><h1>Settings</h1><span class="small muted">Account, team and a log of every change</span></div></div>
+ <div class="grid g2"><div class="card"><h2 style="margin-bottom:10px">Account</h2><dl class="kv"><dt>Publisher</dt><dd>Demo publisher network (sample)</dd><dt>Account ID</dt><dd>482910</dd><dt>Sites</dt><dd>${SITES.length}</dd><dt>Currency</dt><dd>INR (₹)</dd><dt>Contextual</dt><dd>${S.on?`On · ${S.cfg.safety} safety · labels shared: ${S.cfg.share?'yes':'no'}`:'Off'}</dd></dl></div>
+ <div class="card"><h2 style="margin-bottom:10px">Team</h2><dl class="kv"><dt>Priya Nair</dt><dd>Yield manager · Admin</dd><dt>Arjun Mehta</dt><dd>Ad ops executive · Editor</dd><dt>Meera Iyer</dt><dd>Brand and editorial lead · Viewer</dd></dl></div></div>
+ <div class="panel fill"><div class="ph"><h2>Activity log</h2><span class="small muted">${S.log.length} entries</span></div><div class="pb"><ul class="log">${S.log.map(l=>`<li><b>${esc(l.a)}</b><div class="small muted">${esc(l.u)} · ${esc(l.t)}</div></li>`).join('')}</ul></div></div>`;
+}
+/* ---------- modals ---------- */
+const openModal=(html,sm)=>{$('#modal').className='modal'+(sm?' sm':'');$('#modal').innerHTML=html;$('#modalBg').classList.add('open');const f=$('#modal').querySelector('input,select,textarea,button.pri');f&&f.focus()};
+const closeModal=()=>$('#modalBg').classList.remove('open');
+function renderWizard(){
+ const w=wiz,steps=['Choose sites','Safety and privacy','Test plan'];
+ const nPages=PAGES.filter(p=>w.sites[p.site]).length*73;
+ let body='';
+ if(w.step===0)body=`<div class="row between" style="margin-bottom:8px"><p class="muted" style="margin:0">Pick where contextual targeting runs. Each page is read once; news pages refresh every 6 hours.</p><button class="btn sm" data-act="wall">${Object.values(w.sites).every(Boolean)?'Clear all':'Select all'}</button></div><div class="opts2">${SITES.map(s=>`<label class="opt ${w.sites[s.id]?'on':''}"><input type="checkbox" data-w="site" value="${s.id}" ${w.sites[s.id]?'checked':''}><div><b>${s.domain}</b><div class="small muted">${s.cat} · ~${(PAGES.filter(p=>p.site===s.id).length*73).toLocaleString('en-IN')} pages</div></div></label>`).join('')}</div>`;
+ if(w.step===1)body=`<p class="muted" style="margin-top:0">Decide how careful ads should be on risky pages.</p>${[['Strict','No ads at all on high-risk pages (tragedy, disasters). Safest, earns least on news.'],['Moderate','Only news-safe buyers on high-risk pages; no shopping intent inferred there. Recommended.'],['Open','Buyers\' own settings decide. Earns most, more brand-safety risk.']].map(([k,d])=>`<label class="opt ${w.safety===k?'on':''}"><input type="radio" name="saf" data-w="safety" value="${k}" ${w.safety===k?'checked':''}><div><b>${k}</b><div class="small muted">${d}</div></div></label>`).join('')}
+ <label class="opt ${w.sensitive?'on':''}"><input type="checkbox" data-w="sensitive" ${w.sensitive?'checked':''}><div><b>Don't infer shopping intent on sensitive topics</b><div class="small muted">Health, politics and religion pages are labelled by topic only.</div></div></label>
+ <label class="opt ${w.share?'on':''}"><input type="checkbox" data-w="share" ${w.share?'checked':''}><div><b>Share labels with buyers in bid requests</b><div class="small muted">Lets every DSP bid on context. No user data is ever shared.</div></div></label>`;
+ if(w.step===2)body=`<p class="muted" style="margin-top:0">Start with a test so you can see the real lift before going all in.</p><label class="lbl" for="split">Traffic with contextual targeting: <b id="splitv" style="color:var(--ink)">${w.split}%</b> (holdout ${100-w.split}%)</label><input id="split" type="range" min="50" max="95" step="5" value="${w.split}" data-w="split" style="width:100%;accent-color:var(--acc);margin:10px 0 16px">
+ <dl class="kv"><dt>Test length</dt><dd>14 days</dd><dt>Success metric</dt><dd>RPM +3% or more vs holdout</dd><dt>Guardrails</dt><dd>Fill rate and brand safety no worse than holdout; page speed unaffected</dd></dl>`;
+ const sum=`<div class="summary"><h3 style="margin-bottom:10px">Summary</h3><dl><dt>Sites</dt><dd>${SITES.filter(s=>w.sites[s.id]).map(s=>s.domain).join(', ')||'None selected'}</dd><dt>Pages to label</dt><dd>about ${nPages.toLocaleString('en-IN')}</dd><dt>Safety level</dt><dd>${w.safety}</dd><dt>Sensitive topics</dt><dd>${w.sensitive?'Topic only':'Full labels'}</dd><dt>Labels to buyers</dt><dd>${w.share?'Shared':'Not shared'}</dd><dt>Test</dt><dd>${w.split}% / ${100-w.split}%, 14 days</dd></dl></div>`;
+ const none=!Object.values(w.sites).some(Boolean);
+ openModal(`<div class="mhead"><h2>${S.on?'Contextual settings':'Enable contextual targeting'}</h2><button class="btn sm" data-act="closeModal" aria-label="Close">✕</button></div><div class="mbody"><div class="steps">${steps.map((s,i)=>`<div class="${i<=w.step?'on':''}">${i+1}. ${s}</div>`).join('')}</div><div class="wiz"><div>${body}${none&&w.step===0?'<p class="small" style="color:var(--bad)">Select at least one site.</p>':''}</div>${sum}</div></div>
+ <div class="mfoot"><button class="btn" data-act="${w.step?'wback':'closeModal'}">${w.step?'Back':'Cancel'}</button><button class="btn pri" data-act="wnext" ${none?'disabled':''}>${w.step<2?'Next':S.on?'Save settings':'Start labelling'}</button></div>`);
+}
+function analyzeModal(){openModal(`<div class="mhead"><h2>Analyze a new page</h2><button class="btn sm" data-act="closeModal" aria-label="Close">✕</button></div><div class="mbody"><label class="lbl" for="anTitle">Page title</label><input id="anTitle" type="text" style="width:100%;margin:4px 0 12px" placeholder="e.g. 5 easy monsoon recipes"><label class="lbl" for="anSite">Site</label><br><select id="anSite" style="margin:4px 0 12px">${SITES.map(s=>`<option value="${s.id}">${s.domain}</option>`).join('')}</select><br><label class="lbl" for="anText">Article text</label><textarea id="anText" placeholder="Paste the article text here"></textarea><p id="anErr" class="small" style="color:var(--bad);min-height:1.2em;margin:6px 0 0"></p></div><div class="mfoot"><button class="btn" data-act="closeModal">Cancel</button><button class="btn pri" data-act="doAnalyze">Label this page</button></div>`,true)}
+function formModal(kind){
+ const f=kind==='site'?`<label class="lbl" for="fDomain">Domain</label><input id="fDomain" type="text" style="width:100%;margin:4px 0 12px" placeholder="example.com"><label class="lbl" for="fCat">Category</label><input id="fCat" type="text" style="width:100%;margin:4px 0" placeholder="e.g. Travel">`
+ :`<label class="lbl" for="fName">Ad unit name</label><input id="fName" type="text" style="width:100%;margin:4px 0 12px" placeholder="e.g. Below article"><label class="lbl" for="fSize">Size</label><br><select id="fSize" style="margin:4px 0 12px"><option>300×250</option><option>728×90</option><option>320×50</option><option>300×600</option></select><br><label class="lbl" for="fFloor">Floor price (₹ CPM)</label><input id="fFloor" type="text" style="width:100%;margin:4px 0" value="50">`;
+ openModal(`<div class="mhead"><h2>${kind==='site'?'Add site':'Add ad unit'}</h2><button class="btn sm" data-act="closeModal" aria-label="Close">✕</button></div><div class="mbody">${f}<p id="fErr" class="small" style="color:var(--bad);min-height:1.2em;margin:6px 0 0"></p></div><div class="mfoot"><button class="btn" data-act="closeModal">Cancel</button><button class="btn pri" data-act="${kind==='site'?'saveSite':'saveUnit'}">Save</button></div>`,true)}
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),3200)}
+let timer;function startLabelling(){clearInterval(timer);S.progress=0;timer=setInterval(()=>{S.progress=Math.min(1,S.progress+.09);if(S.progress>=1){clearInterval(timer);toast('All pages labelled. Contextual ads are live.')}if(!$('#modalBg').classList.contains('open'))render()},700)}
+async function copy(text,btn){try{await navigator.clipboard.writeText(text);btn.textContent='Copied'}catch(e){btn.textContent='Select and copy'}}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+ const b=e.target.closest('button,[data-site],[data-page],[data-fsite]');if(!b)return;const d=b.dataset;
+ if(d.nav){S.view=d.nav;closeDrawer();render();window.scrollTo(0,0);return}
+ if(d.go){S.view=d.go;render();window.scrollTo(0,0);return}
+ if(d.fsite){S.siteF=S.siteF===d.fsite?'all':d.fsite;render();return}
+ if(d.mode){S.mode=d.mode;render();return}
+ if(d.tab){S.ctxTab=d.tab;render();return}
+ if(d.prev){const p=PAGES.find(x=>x.id===d.prev);S.prev={site:p.site,page:p.id,unit:UNITS.findIndex(u=>u.site===p.site&&u.name==='In-article')};S.view='ctx';S.ctxTab='preview';closeDrawer();render();window.scrollTo(0,0);return}
+ if(d.site&&b.tagName==='TR'){S.selSite=d.site;render();return}
+ if(d.page&&b.tagName==='TR'){openDrawer(d.page);return}
+ const a=d.act;if(!a)return;
+ if(a==='wizard'){wiz={step:0,...JSON.parse(JSON.stringify(S.cfg))};renderWizard()}
+ if(a==='closeModal')closeModal();
+ if(a==='wall'){const all=Object.values(wiz.sites).every(Boolean);SITES.forEach(s=>wiz.sites[s.id]=!all);renderWizard()}
+ if(a==='wback'){wiz.step--;renderWizard()}
+ if(a==='wnext'){if(wiz.step<2){wiz.step++;renderWizard();return}
+  const first=!S.on;S.cfg={sites:wiz.sites,safety:wiz.safety,sensitive:wiz.sensitive,share:wiz.share,split:wiz.split};closeModal();
+  if(first){S.on=true;addLog(`Enabled contextual targeting on ${SITES.filter(s=>S.cfg.sites[s.id]).map(s=>s.domain).join(', ')} (${S.cfg.split}/${100-S.cfg.split} test, ${S.cfg.safety} safety)`);S.view='ctx';S.ctxTab='pages';startLabelling();toast('Labelling started. Pages appear as they are read.')}
+  else{addLog(`Changed contextual settings: ${S.cfg.safety} safety, ${S.cfg.split}/${100-S.cfg.split} split, label sharing ${S.cfg.share?'on':'off'}`);toast('Settings saved.')}
+  render()}
+ if(a==='closeDrawer')closeDrawer();
+ if(a==='saveOv'){const p=PAGES.find(x=>x.id===d.id),t=$('#ovTopic').value,r=$('#ovTier').value;p.ov=t||r?{topic:t||null,tier:r||null}:null;addLog(`Edited labels on ${siteOf(p.site).domain}${p.path}${t?' · topic: '+t:''}${r?' · safety: '+r:''}`);toast('Labels saved. They will be kept on re-crawls.');render();openDrawer(p.id)}
+ if(a==='clearOv'){const p=PAGES.find(x=>x.id===d.id);p.ov=null;addLog(`Reset labels to automatic on ${siteOf(p.site).domain}${p.path}`);render();openDrawer(p.id)}
+ if(a==='recrawl'){const p=PAGES.find(x=>x.id===d.id);p.recrawl=true;toast('Re-crawl queued. Fresh labels in a few minutes.');openDrawer(p.id)}
+ if(a==='analyze')analyzeModal();
+ if(a==='doAnalyze'){const t=$('#anText').value.trim(),ti=$('#anTitle').value.trim()||'Untitled page',si=$('#anSite').value;if(t.split(/\s+/).length<15){$('#anErr').textContent='Paste at least 15 words of article text.';return}
+  const id='p'+PAGES.length;PAGES.push({id,site:si,sec:'unknown',path:'/new/'+ti.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,40),title:ti,pv:1000,text:t,L:analyze(t),ov:null,recrawl:false});
+  if(!S.cfg.sites[si]||!S.on){toast('Page labelled. Turn contextual on for this site to use the labels.')}else toast('Page labelled.');addLog(`Analyzed new page "${ti}"`);closeModal();render();if(labelled(PAGES.at(-1)))openDrawer(id)}
+ if(a==='copyRtb')copy($('#rtb').textContent,b);
+ if(a==='csv'){const si=siteIdx(),td=[...Array(DAYS-TEST0)].map((_,i)=>TEST0+i),r=topicStats(td,si);copy('topic,impressions,net_revenue_inr,ecpm_contextual,ecpm_holdout\n'+r.map(x=>[x.topic,Math.round(x.imp),Math.round(x.rev),x.ec.toFixed(2),x.eh.toFixed(2)].join(',')).join('\n'),b)}
+ if(a==='rollout'){S.rolled=true;addLog('Rolled out contextual targeting to 95% of traffic (5% permanent holdout)');toast('Rolled out to 95% of traffic.');render()}
+ if(a==='addSite')formModal('site');if(a==='addUnit')formModal('unit');
+ if(a==='saveSite'){const dm=$('#fDomain').value.trim();if(!/^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(dm)){$('#fErr').textContent='Enter a domain like example.com';return}SITES.push({...CATP.News,id:'s'+SITES.length,domain:dm,cat:$('#fCat').value.trim()||'Other',pv:0,req:0});addLog('Added site '+dm);closeModal();toast('Site added. Add the Media.net tag to start serving.');render()}
+ if(a==='saveUnit'){const nm=$('#fName').value.trim(),fl=Number($('#fFloor').value);if(!nm||!(fl>0)){$('#fErr').textContent='Enter a name and a floor price above 0.';return}UNITS.push({site:S.selSite,name:nm,size:$('#fSize').value,place:'Article body',floor:fl,ctx:true});addLog(`Added ad unit "${nm}" on ${siteOf(S.selSite).domain}`);closeModal();render()}
+});
+document.addEventListener('change',e=>{const t=e.target,d=t.dataset;
+ if(d.f){S[d.f]=d.f==='range'?Number(t.value):t.value;render()}
+ if(d.pf&&d.pf!=='q'){S.pf[d.pf]=t.value;render()}
+ if(d.pv){S.prev[d.pv]=d.pv==='unit'?Number(t.value):t.value;if(d.pv==='site'){S.prev.page=PAGES.find(p=>p.site===t.value).id;S.prev.unit=UNITS.findIndex(u=>u.site===t.value)}render()}
+ if(d.unit){const u=UNITS[d.unit];u.ctx=t.checked;addLog(`Turned contextual ${t.checked?'on':'off'} for "${u.name}" on ${siteOf(u.site).domain}`);toast(`Contextual ${t.checked?'on':'off'} for ${u.name}.`)}
+ if(d.w){if(d.w==='site')wiz.sites[t.value]=t.checked;else if(d.w==='safety')wiz.safety=t.value;else if(d.w==='split')wiz.split=Number(t.value);else wiz[d.w]=t.checked;renderWizard()}
+});
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset.pf==='q'){S.pf.q=t.value;const pos=t.selectionStart;render();const n=document.querySelector('[data-pf="q"]');n.focus();n.setSelectionRange(pos,pos)}if(t.id==='split'){wiz.split=Number(t.value);$('#splitv').textContent=t.value+'%'}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDrawer()}if(e.key==='Enter'&&e.target.matches('tr.click')){e.target.click()}});
+$('#drawerBg').addEventListener('click',closeDrawer);
+$('#modalBg').addEventListener('click',e=>{if(e.target.id==='modalBg')closeModal()});
+let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(after,150)});
+render();
+}
+</script>
+</body>
+</html>
